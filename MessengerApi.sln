@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerApi", "MessengerApi\MessengerApi.csproj", "{70651A78-D6B2-4BAD-AB90-34508E893D07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerApi.DAL", "MessengerApi.DAL\MessengerApi.DAL.csproj", "{87E81463-08ED-4858-9D29-00F37B07FC28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerApi.Migrations", "MessengerApi.Migrations\MessengerApi.Migrations.csproj", "{56996B28-F6C8-4ADC-92E4-EA29F14029BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{70651A78-D6B2-4BAD-AB90-34508E893D07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70651A78-D6B2-4BAD-AB90-34508E893D07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70651A78-D6B2-4BAD-AB90-34508E893D07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87E81463-08ED-4858-9D29-00F37B07FC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E81463-08ED-4858-9D29-00F37B07FC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87E81463-08ED-4858-9D29-00F37B07FC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87E81463-08ED-4858-9D29-00F37B07FC28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56996B28-F6C8-4ADC-92E4-EA29F14029BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56996B28-F6C8-4ADC-92E4-EA29F14029BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56996B28-F6C8-4ADC-92E4-EA29F14029BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56996B28-F6C8-4ADC-92E4-EA29F14029BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
