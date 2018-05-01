@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessengerApi.DAL.Repositories
 {
-    class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<ApplicationUser> _userManager;

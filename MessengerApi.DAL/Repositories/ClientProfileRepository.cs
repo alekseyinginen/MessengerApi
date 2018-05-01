@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MessengerApi.DAL.Repositories
 {
-    class ClientProfileRepository : Repository<ClientProfile, string>, IClientProfileRepository
+    public class ClientProfileRepository : Repository<ClientProfile, string>, IClientProfileRepository
     {
         public ClientProfileRepository(ApplicationContext context) : base(context) 
         {

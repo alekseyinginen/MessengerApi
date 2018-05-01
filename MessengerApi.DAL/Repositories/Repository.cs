@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MessengerApi.DAL.Repositories
 {
-    class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
+    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
     {
         protected readonly ApplicationContext _context;
         private readonly DbSet<TEntity> _dbSet;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MessengerApi.DAL.Interfaces
 {
-    interface IUnitOfWork
+    public interface IUnitOfWork
     {
         ApplicationContext Context { get; }
         UserManager<ApplicationUser> UserManager { get; }
