@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MessengerApi.DAL.Entities;
-using MessengerApi.DAL.Interfaces;
 using MessengerApi.BLL.Dto;
 using MessengerApi.BLL.Infrastucture;
 using MessengerApi.BLL.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MessengerApi.DAL.Interfaces;
 
 namespace MessengerApi.BLL.Services
 {

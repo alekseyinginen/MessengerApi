@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MessengerApi.DAL.Interfaces
 {
-    public public interface IRepository<TEntity, TKey> where TEntity : class
+    public interface IRepository<TEntity, TKey> where TEntity : class
     {
         IQueryable<TEntity> Query();
 

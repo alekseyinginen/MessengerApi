@@ -12,6 +12,8 @@ using MessengerApi.BLL.Interfaces;
 using MessengerApi.BLL.Services;
 using MessengerApi.DAL.Interfaces;
 using MessengerApi.DAL.Repositories;
+using Microsoft.Extensions.Hosting;
+using MessengerApi.TcpServer.Core;
 
 namespace MessengerApi
 {
@@ -41,6 +43,8 @@ namespace MessengerApi
             services.AddIdentity<ApplicationUser, IdentityRole>(opts => { opts.User.RequireUniqueEmail = true; })
                .AddEntityFrameworkStores<ApplicationContext>()
                .AddDefaultTokenProviders();
+
+            services.AddSingleton<IHostedService, ServerObject>();
 
             services.AddMvc();
         }

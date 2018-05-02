@@ -22,6 +22,7 @@
     <ProjectReference Include="..\MessengerApi.DAL\MessengerApi.DAL.csproj" />
     <ProjectReference Include="..\MessengerApi.Migrations\MessengerApi.Migrations.csproj" />
     <ProjectReference Include="..\MessengerApi.Services\MessengerApi.BLL.csproj" />
+    <ProjectReference Include="..\MessengerApi.TcpServer\MessengerApi.TcpServer.csproj" />
   </ItemGroup>
 
 </Project>
