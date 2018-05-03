@@ -27,8 +27,7 @@ namespace MessengerApi.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [Route("api/messages")]
+        [Route("api/messages/all")]
         public async Task<IActionResult> GetAllMessages()
         {
             List<MessageDto> messageDtos = _messageService.GetAll();
