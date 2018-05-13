@@ -6,6 +6,8 @@ namespace MessengerApi.TcpServer.Models
 {
     class EventDetails
     {
-        public string Message { get; set; }
+        public string MessageText { get; set; }
+
+        public DateTime PublishTime { get; set; }
     }
 }

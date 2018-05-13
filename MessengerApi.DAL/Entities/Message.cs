@@ -5,6 +5,11 @@ namespace MessengerApi.DAL.Entities
 {
     public class Message
     {
+        public Message()
+        {
+            Id = Guid.NewGuid();
+        }
+
         public Guid Id { get; set; }
 
         [DataType("nvarchar(100)")]

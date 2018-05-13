@@ -107,7 +107,7 @@ namespace MessengerApi.BLL.Services
             ApplicationUser user = await _database.UserManager.FindByEmailAsync(email);
             if (user == null) 
             {
-                user = new ApplicationUser { Email = email, UserName = username, EmailConfirmed = false };
+                user = new ApplicationUser { Email = email, UserName = username, EmailConfirmed = true };
                 var result = await _database.UserManager.CreateAsync(user, password);
                 userId = result.Succeeded ? user.Id : string.Empty;
             }

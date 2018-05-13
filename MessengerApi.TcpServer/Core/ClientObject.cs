@@ -39,7 +39,7 @@ namespace MessengerApi.TcpServer.Core
 
         private void BroadcastEventDetails(string message)
         {
-            EventDetails details = new EventDetails { Message = message };
+            EventDetails details = new EventDetails { MessageText = message, PublishTime = DateTime.Now };
             string json = JsonFormatter.Serialize(details);
             server.BroadcastMessage(json, Id);
         }
@@ -58,7 +58,7 @@ namespace MessengerApi.TcpServer.Core
             {
                 Stream = client.GetStream();
                 user = JsonFormatter.Deserialize<User>(GetMessage());
-                BroadcastEventDetails(user.Username + " entered chat");
+                BroadcastEventDetails(String.Format("{0} entered chat", user.Username));
                 
                 while (true)
                 {
@@ -69,7 +69,7 @@ namespace MessengerApi.TcpServer.Core
                     }
                     catch (Exception)
                     {
-                        BroadcastEventDetails(String.Format("{0}: left chat", user.Username));
+                        BroadcastEventDetails(string.Format("{0}: left chat", user.Username));
                         break;
                     }
                 }
