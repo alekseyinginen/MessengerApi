@@ -18,8 +18,6 @@ namespace MessengerApi.TcpServer.Core
     public class ServerObject : IHostedService
     {
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
-        private readonly IMessageService _messageService;
         private static TcpListener tcpListener;
         private List<ClientObject> clients = new List<ClientObject>();
 
@@ -28,8 +26,8 @@ namespace MessengerApi.TcpServer.Core
             using (var scope = services.CreateScope())
             {
                 _mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
-                _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                _messageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
+                //_userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+                //_messageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
             }
         }
 
@@ -80,7 +78,7 @@ namespace MessengerApi.TcpServer.Core
 
         protected internal void BroadcastMessage(string message, string id)
         {
-            byte[] data = Encoding.Unicode.GetBytes(message);
+            byte[] data = Encoding.UTF8.GetBytes(message);
             for (int i = 0; i < clients.Count; i++)
             {
                 if (clients[i].Id != id)
@@ -100,12 +98,6 @@ namespace MessengerApi.TcpServer.Core
             }
             Environment.Exit(0);
         }
-
-        public async Task AddMessageToDatabase(BroadcastMessage message)
-        {
-            MessageDto messageDto = _mapper.Map<BroadcastMessage, MessageDto>(message);
-            messageDto.ApplicationUserId = await _userService.GetUserId(message.SenderUsername);
-            await _messageService.Create(messageDto);
-        }
+        
     }
 }

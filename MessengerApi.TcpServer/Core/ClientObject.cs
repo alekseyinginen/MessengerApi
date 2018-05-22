@@ -27,28 +27,10 @@ namespace MessengerApi.TcpServer.Core
             serverObject.AddConnection(this);
         }
 
-        private BroadcastMessage GetBroadcastMessage(string username, string messageText)
-        {
-            return new BroadcastMessage
-            {
-                SenderUsername = username,
-                MessageText = messageText,
-                PublishTime = DateTime.Now
-            };
-        }
-
         private void BroadcastEventDetails(string message)
         {
             EventDetails details = new EventDetails { MessageText = message, PublishTime = DateTime.Now };
             string json = JsonFormatter.Serialize(details);
-            server.BroadcastMessage(json, Id);
-        }
-
-        private async Task BroadcastMessage(string message)
-        {
-            BroadcastMessage broadcastMessage = GetBroadcastMessage(user.Username, message);
-            await server.AddMessageToDatabase(broadcastMessage);
-            string json = JsonFormatter.Serialize(broadcastMessage);
             server.BroadcastMessage(json, Id);
         }
 
@@ -58,18 +40,18 @@ namespace MessengerApi.TcpServer.Core
             {
                 Stream = client.GetStream();
                 user = JsonFormatter.Deserialize<User>(GetMessage());
-                BroadcastEventDetails(String.Format("{0} entered chat", user.Username));
+                BroadcastEventDetails(String.Format("\t\t{0} entered chat", user.Username));
                 
                 while (true)
                 {
                     try
                     {
                         string json = GetMessage();
-                        await BroadcastMessage(json);
+                        server.BroadcastMessage(json, Id);
                     }
                     catch (Exception)
                     {
-                        BroadcastEventDetails(string.Format("{0}: left chat", user.Username));
+                        BroadcastEventDetails(string.Format("\t\t{0}: left chat", user.Username));
                         break;
                     }
                 }

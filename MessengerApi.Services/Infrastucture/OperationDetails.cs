@@ -1,6 +1,5 @@
 ﻿namespace MessengerApi.BLL.Infrastucture
-{
-    public class OperationDetails
+{    public class OperationDetails
     {
         public OperationDetails(bool succedeed, string message, string property) {
             Succedeed = succedeed;

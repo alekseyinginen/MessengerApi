@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MessengerApi.Models;
 using MessengerApi.BLL.Dto;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace MessengerApi.Controllers
 {
@@ -55,6 +56,20 @@ namespace MessengerApi.Controllers
             return Ok(messages);
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("api/messages/add-message")]
+        public async Task<IActionResult> AddMessage([Required][FromBody]MessageModel message)
+        {
+            if (ModelState.IsValid)
+            {
+                MessageDto messageDto = await GetFullInfoMessageDto(message);
+                messageDto = await _messageService.Create(messageDto);
+                return Ok(_mapper.Map<MessageDto, MessageModel>(messageDto));
+            }
+            return BadRequest(ModelState);
+        }
+
         private async Task<List<MessageModel>> GetMessages(List<MessageDto> messageDtos) 
         {
             List<MessageModel> messages = new List<MessageModel>();
@@ -73,9 +88,21 @@ namespace MessengerApi.Controllers
             return message;
         }
 
+        private async Task<MessageDto> GetFullInfoMessageDto(MessageModel messageModel)
+        {
+            MessageDto message = _mapper.Map<MessageModel, MessageDto>(messageModel);
+            message.ApplicationUserId = await GetMessageSenderId(messageModel.SenderUsername);
+            return message;
+        }
+
         private async Task<string> GetMessageSenderUsername(string userId)
         {
             return (await _userService.GetUserById(userId)).Username;
+        }
+
+        private async Task<string> GetMessageSenderId(string username)
+        {
+            return await _userService.GetUserId(username);
         }
     }
 }
