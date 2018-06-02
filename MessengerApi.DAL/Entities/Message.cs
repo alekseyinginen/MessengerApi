@@ -12,7 +12,7 @@ namespace MessengerApi.DAL.Entities
 
         public Guid Id { get; set; }
 
-        [DataType("nvarchar(100)")]
+        [DataType("nvarchar(max)")]
         public string MessageText { get; set; }
 
         public DateTime PublishTime { get; set; }
@@ -20,5 +20,9 @@ namespace MessengerApi.DAL.Entities
         public string ApplicationUserId { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
+
+        public Group Group { get; set; }
+
+        public string GroupId { get; set; }
     }
 }

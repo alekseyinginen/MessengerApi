@@ -11,9 +11,10 @@ using System;
 namespace MessengerApi.Migrations.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20180527165706_AddMessageRecipient")]
+    partial class AddMessageRecipient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,6 +76,8 @@ namespace MessengerApi.Migrations.Migrations
                 {
                     b.Property<string>("Id");
 
+                    b.Property<string>("BlackList");
+
                     b.Property<string>("PictureURL");
 
                     b.Property<string>("Username")
@@ -85,38 +88,6 @@ namespace MessengerApi.Migrations.Migrations
                     b.ToTable("ClientProfiles");
                 });
 
-            modelBuilder.Entity("MessengerApi.DAL.Entities.Group", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ApplicationUserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("MessengerApi.DAL.Entities.GroupUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ApplicationUserId");
-
-                    b.Property<string>("GroupId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("GroupUsers");
-                });
-
             modelBuilder.Entity("MessengerApi.DAL.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -124,7 +95,7 @@ namespace MessengerApi.Migrations.Migrations
 
                     b.Property<string>("ApplicationUserId");
 
-                    b.Property<string>("GroupId");
+                    b.Property<string>("MessageRecipientId");
 
                     b.Property<string>("MessageText");
 
@@ -134,9 +105,23 @@ namespace MessengerApi.Migrations.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("MessageRecipientId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("MessengerApi.DAL.Entities.MessageRecipient", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ApplicationUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("MessageRecipient");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -255,33 +240,22 @@ namespace MessengerApi.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("MessengerApi.DAL.Entities.Group", b =>
-                {
-                    b.HasOne("MessengerApi.DAL.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-                });
-
-            modelBuilder.Entity("MessengerApi.DAL.Entities.GroupUser", b =>
-                {
-                    b.HasOne("MessengerApi.DAL.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("MessengerApi.DAL.Entities.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId");
-                });
-
             modelBuilder.Entity("MessengerApi.DAL.Entities.Message", b =>
                 {
                     b.HasOne("MessengerApi.DAL.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("Messages")
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MessengerApi.DAL.Entities.Group", "Group")
+                    b.HasOne("MessengerApi.DAL.Entities.MessageRecipient", "MessageRecipient")
+                        .WithMany("Messages")
+                        .HasForeignKey("MessageRecipientId");
+                });
+
+            modelBuilder.Entity("MessengerApi.DAL.Entities.MessageRecipient", b =>
+                {
+                    b.HasOne("MessengerApi.DAL.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

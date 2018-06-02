@@ -12,8 +12,12 @@ namespace MessengerApi.DAL.Interfaces
         SignInManager<ApplicationUser> SignInManager { get; }
         RoleManager<IdentityRole> RoleManager { get; }
 
+        IGroupUserRepository GroupUserRepository { get; } //!!!!!!!!!!!
+        IGroupRepository GroupRepository { get; } //!!!!!!!!!!!
         IClientProfileRepository ClientProfileRepository { get; }
         IMessageRepository MessageRepository { get; }
+
+
 
         Task SaveAsync();
     }

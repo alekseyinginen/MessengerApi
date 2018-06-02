@@ -12,7 +12,11 @@ namespace MessengerApi.DAL.EF
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 
         public DbSet<ClientProfile> ClientProfiles { get; set; }
-
+        
         public DbSet<Message> Messages { get; set; }
+
+        public DbSet<Group> Groups { get; set; }
+
+        public DbSet<GroupUser> GroupUsers { get; set; }
     }
 }
