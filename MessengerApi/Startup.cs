@@ -12,8 +12,9 @@ using MessengerApi.BLL.Interfaces;
 using MessengerApi.BLL.Services;
 using MessengerApi.DAL.Interfaces;
 using MessengerApi.DAL.Repositories;
-using Microsoft.Extensions.Hosting;
+//using Microsoft.Extensions.Hosting;
 using MessengerApi.TcpServer.Core;
+using MessengerApi.Hubs;
 
 namespace MessengerApi
 {
@@ -37,6 +38,8 @@ namespace MessengerApi
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IGroupService, GroupServise>();
+            services.AddScoped<IGroupUserService, GroupUserServise>();
 
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ApplicationContext"), b => b.MigrationsAssembly("MessengerApi.Migrations")));
 
@@ -44,9 +47,11 @@ namespace MessengerApi
                .AddEntityFrameworkStores<ApplicationContext>()
                .AddDefaultTokenProviders();
 
-            services.AddSingleton<IHostedService, ServerObject>();
+            //services.AddSingleton<IHostedService, ServerObject>();
 
             services.AddMvc();
+
+            services.AddSignalR();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -57,6 +62,11 @@ namespace MessengerApi
             }
 
             app.UseAuthentication();
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chathub");
+            });
 
             app.UseMvc();
         }

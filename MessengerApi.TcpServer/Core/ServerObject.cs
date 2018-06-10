@@ -76,15 +76,27 @@ namespace MessengerApi.TcpServer.Core
             }
         }
 
-        protected internal void BroadcastMessage(string message, string id)
+        protected internal void BroadcastMessage(string message, string id, string groupId)
         {
             byte[] data = Encoding.UTF8.GetBytes(message);
-            for (int i = 0; i < clients.Count; i++)
+
+            var recipients = clients.Where(x => x.Id != id && x.User.GroupIds.Contains(groupId)).ToList();
+
+            foreach (var recipient in recipients)
             {
-                if (clients[i].Id != id)
-                {
-                    clients[i].Stream.Write(data, 0, data.Length);
-                }
+                recipient.Stream.Write(data, 0, data.Length);
+            }
+        }
+
+        public void BroadcastEvent(string json, User user)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(json);
+
+            var recipients = clients.Where(x => x.User.GroupIds.Any(y => user.GroupIds.Contains(y))).ToList();
+
+            foreach (var recipient in recipients)
+            {
+                recipient.Stream.Write(data, 0, data.Length);
             }
         }
 

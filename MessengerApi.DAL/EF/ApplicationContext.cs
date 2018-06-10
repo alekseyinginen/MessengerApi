@@ -18,5 +18,7 @@ namespace MessengerApi.DAL.EF
         public DbSet<Group> Groups { get; set; }
 
         public DbSet<GroupUser> GroupUsers { get; set; }
+
+        public DbSet<ConnectedUser> ConnectedUsers { get; set; }
     }
 }

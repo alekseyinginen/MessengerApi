@@ -19,6 +19,8 @@ namespace MessengerApi.TcpServer.Core
 
         private User user;
 
+        public User User => user;
+
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
             Id = Guid.NewGuid().ToString();
@@ -31,7 +33,7 @@ namespace MessengerApi.TcpServer.Core
         {
             EventDetails details = new EventDetails { MessageText = message, PublishTime = DateTime.Now };
             string json = JsonFormatter.Serialize(details);
-            server.BroadcastMessage(json, Id);
+            server.BroadcastEvent(json, user);
         }
 
         public async Task Process()
@@ -47,7 +49,8 @@ namespace MessengerApi.TcpServer.Core
                     try
                     {
                         string json = GetMessage();
-                        server.BroadcastMessage(json, Id);
+                        var message = JsonFormatter.Deserialize<BroadcastMessage>(json);
+                        server.BroadcastMessage(json, Id, message.GroupId);
                     }
                     catch (Exception)
                     {
@@ -74,7 +77,7 @@ namespace MessengerApi.TcpServer.Core
             do
             {
                 bytes = Stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.UTF8.GetString(data, 0, bytes)); // Unicode as default
+                builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
             }
             while (Stream.DataAvailable);
 

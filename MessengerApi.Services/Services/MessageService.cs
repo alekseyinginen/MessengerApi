@@ -75,5 +75,11 @@ namespace MessengerApi.BLL.Services
             IEnumerable<Message> messages = _database.MessageRepository.GetRangeOfUsersMessages(userId, page, itemsPerPage);
             return _mapper.Map<List<Message>, List<MessageDto>>(messages.ToList());
         }
+
+        public List<MessageDto> GetAllGroupMessages(string groupId)
+        {
+            var messages = _database.MessageRepository.Query().Where(x => x.GroupId == groupId).ToList();
+            return _mapper.Map<List<MessageDto>>(messages);
+        }
     }
 }

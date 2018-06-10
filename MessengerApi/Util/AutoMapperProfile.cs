@@ -11,6 +11,7 @@ namespace MessengerApi.Util
         public AutoMapperProfile() {
             CreateMapsForUser();
             CreateMapsForMessage();
+            CreateMapsForGroups();
         }
 
         private void CreateMapsForUser()
@@ -52,6 +53,20 @@ namespace MessengerApi.Util
                 .ReverseMap();
 
             CreateMap<MessageDto, BroadcastMessage>()
+                .ReverseMap();
+        }
+
+        private void CreateMapsForGroups()
+        {
+            CreateMap<Group, GroupDto>()
+                .ForMember(x => x.Username, y => y.MapFrom(z => z.ApplicationUser.UserName))
+                .ReverseMap();
+
+            CreateMap<GroupUser, GroupUserDto>()
+                .ForMember(x => x.Username, y => y.MapFrom(z => z.ApplicationUser.UserName))
+                .ReverseMap();
+
+            CreateMap<GroupDto, GroupModel>()
                 .ReverseMap();
         }
     }

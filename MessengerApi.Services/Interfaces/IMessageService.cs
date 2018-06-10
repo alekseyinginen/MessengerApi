@@ -11,6 +11,8 @@ namespace MessengerApi.BLL.Interfaces
 
         List<MessageDto> GetAll();
 
+        List<MessageDto> GetAllGroupMessages(string groupId);
+
         List<MessageDto> GetRange(int page, int itemsPerPage);
 
         Task<MessageDto> Create(MessageDto item);

@@ -9,5 +9,7 @@ namespace MessengerApi.TcpServer.Models
         public string Username { get; set; }
 
         public string PictureURL { get; set; }
+
+        public List<string> GroupIds { get; set; }
     }
 }

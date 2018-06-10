@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MessengerApi.BLL.Dto
 {
-    public class MessageDto 
+    public class MessageDto
     {
         public Guid Id { get; set; }
 
@@ -13,5 +13,7 @@ namespace MessengerApi.BLL.Dto
         public DateTime PublishTime { get; set; }
 
         public string ApplicationUserId { get; set; }
+
+        public string GroupId { get; set; }
     }
 }

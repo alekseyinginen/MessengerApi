@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MessengerApi.DAL.Entities
 {
-    public class Group
+    public class ConnectedUser
     {
         public string Id { get; set; }
 
@@ -10,6 +12,6 @@ namespace MessengerApi.DAL.Entities
 
         public ApplicationUser ApplicationUser { get; set; }
 
-        public List<GroupUser> GroupUsers { get; set; }
+        public string Connection { get; set; }
     }
 }

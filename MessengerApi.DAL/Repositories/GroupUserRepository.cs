@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MessengerApi.DAL.Repositories
 {
-    public class GroupUserRepository : Repository<Group, string>//, IGroupUserRepository
+    public class GroupUserRepository : Repository<GroupUser, string>, IGroupUserRepository
     {
         public GroupUserRepository(ApplicationContext context) : base(context)
         {

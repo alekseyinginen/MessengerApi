@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerApi.Migrations", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerApi.BLL", "MessengerApi.Services\MessengerApi.BLL.csproj", "{9B2F45F4-0472-48CA-8BC8-742AFD1A8FBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerApi.TcpServer", "MessengerApi.TcpServer\MessengerApi.TcpServer.csproj", "{59317610-C2B9-4117-904B-95EF10928DED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessengerApi.TcpServer", "MessengerApi.TcpServer\MessengerApi.TcpServer.csproj", "{59317610-C2B9-4117-904B-95EF10928DED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerApi.Hubs", "MessengerApi.Hubs\MessengerApi.Hubs.csproj", "{1970215F-D41D-4E53-93B8-25A5374A9CF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{59317610-C2B9-4117-904B-95EF10928DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59317610-C2B9-4117-904B-95EF10928DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59317610-C2B9-4117-904B-95EF10928DED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1970215F-D41D-4E53-93B8-25A5374A9CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1970215F-D41D-4E53-93B8-25A5374A9CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1970215F-D41D-4E53-93B8-25A5374A9CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1970215F-D41D-4E53-93B8-25A5374A9CF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

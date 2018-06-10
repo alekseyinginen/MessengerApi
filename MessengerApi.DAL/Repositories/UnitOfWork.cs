@@ -12,12 +12,12 @@ namespace MessengerApi.DAL.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
-        private readonly IGroupUserRepository _groupUserRepository; //!!!!!!!!!!!
-        private readonly IGroupRepository _groupRepository; //!!!!!!!!!!!
+        
+        private readonly IGroupUserRepository _groupUserRepository;
+        private readonly IGroupRepository _groupRepository; 
         private readonly IClientProfileRepository _clientProfileRepository;
         private readonly IMessageRepository _messageRepository;
-
+        
         public UnitOfWork(
                 ApplicationContext context,
                 UserManager<ApplicationUser> userManager,
@@ -30,7 +30,8 @@ namespace MessengerApi.DAL.Repositories
             _roleManager = roleManager;
             _signInManager = signInManager;
 
-            //_groupRepository = new GroupRepository();
+            _groupUserRepository = new GroupUserRepository(_context);
+            _groupRepository = new GroupRepository(_context);
             _clientProfileRepository = new ClientProfileRepository(_context);
             _messageRepository = new MessageRepository(_context);
         }
@@ -47,9 +48,9 @@ namespace MessengerApi.DAL.Repositories
 
         public IMessageRepository MessageRepository => _messageRepository;
 
-        public IGroupRepository GroupRepository => _groupRepository; //!!!!!!!!!!!
+        public IGroupRepository GroupRepository => _groupRepository; 
 
-        public IGroupUserRepository GroupUserRepository => _groupUserRepository; //!!!!!!!!!!!
+        public IGroupUserRepository GroupUserRepository => _groupUserRepository; 
 
         public async Task SaveAsync() {
             await _context.SaveChangesAsync();

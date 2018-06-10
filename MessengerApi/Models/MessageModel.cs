@@ -11,5 +11,7 @@ namespace MessengerApi.Models
         public DateTime PublishTime { get; set; }
 
         public string SenderUsername { get; set; }
+
+        public string GroupId { get; set; }
     }
 }

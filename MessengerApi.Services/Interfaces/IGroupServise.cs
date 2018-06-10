@@ -1,11 +1,15 @@
 ﻿using MessengerApi.BLL.Dto;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MessengerApi.BLL.Interfaces
 {
-    public interface IGroupServise
+    public interface IGroupService
     {
+        Task<GroupDto> GetGroupById(string groupId);
+
+        Task<List<GroupDto>> GetUserGroups(string username);
+
+        Task<GroupDto> CreateGroup(GroupDto group);
     }
 }

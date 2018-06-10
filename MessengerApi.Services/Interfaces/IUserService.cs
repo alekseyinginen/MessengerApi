@@ -7,6 +7,8 @@ namespace MessengerApi.BLL.Interfaces
 {
     public interface IUserService
     {
+        List<UserDto> SearchForUsers(string username);
+
         Task<UserDto> GetUserById(string id);
 
         Task<string> GetUserId(string username);

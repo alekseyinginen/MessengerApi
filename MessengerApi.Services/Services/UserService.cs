@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MessengerApi.DAL.Interfaces;
+using System.Linq;
 
 namespace MessengerApi.BLL.Services
 {
@@ -25,6 +26,13 @@ namespace MessengerApi.BLL.Services
         {
             ClientProfile profile = await _database.ClientProfileRepository.GetById(id);
             return _mapper.Map<ClientProfile, UserDto>(profile);
+        }
+
+        public List<UserDto> SearchForUsers(string username)
+        {
+            var users = _database.ClientProfileRepository.Query().Where(x => x.Username.Contains(username)).ToList();
+
+            return _mapper.Map<List<UserDto>>(users);
         }
 
         public async Task<string> GetUserId(string username)

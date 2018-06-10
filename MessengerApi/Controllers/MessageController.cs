@@ -16,23 +16,47 @@ namespace MessengerApi.Controllers
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
         private readonly IUserService _userService;
+        private readonly IGroupService _groupService;
+        private readonly IGroupUserService _groupUserService;
 
         public MessageController(
             IMapper mapper, 
             IMessageService messageService,
-            IUserService userService)
+            IUserService userService,
+            IGroupService groupService,
+            IGroupUserService groupUserService)
         {
             _mapper = mapper;
             _messageService = messageService;
             _userService = userService;
+            _groupService = groupService;
+            _groupUserService = groupUserService;
         }
+
+        [HttpGet]
+        [Route("api/group-messages/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetAllGroupMessages([Required]string id)
+        {
+            var group = await _groupService.GetGroupById(id);
+
+            if (group != null && _groupUserService.CheckForUserExistingInGroup(id, User.Identity.Name))
+            {
+                var messages = _messageService.GetAllGroupMessages(id);
+
+                return Ok(_mapper.Map<List<MessageModel>>(messages));
+            }
+            return BadRequest();
+
+        }
+        
 
         [HttpGet]
         [Route("api/messages/all")]
         public async Task<IActionResult> GetAllMessages()
         {
             List<MessageDto> messageDtos = _messageService.GetAll();
-            List<MessageModel> messages = await GetMessages(messageDtos);
+            List<MessageModel> messages = await GetMessageModelsFromListOfDto(messageDtos);
             return Ok(messages);
         }
 
@@ -42,7 +66,7 @@ namespace MessengerApi.Controllers
         public async Task<IActionResult> GetRangeOfMessages([Required]int page, [Required]int itemsPerPage)
         {
             List<MessageDto> messageDtos = _messageService.GetRange(page, itemsPerPage);
-            List<MessageModel> messages = await GetMessages(messageDtos);
+            List<MessageModel> messages = await GetMessageModelsFromListOfDto(messageDtos);
             return Ok(messages);
         }
 
@@ -52,7 +76,7 @@ namespace MessengerApi.Controllers
         public async Task<IActionResult> GetUserMessages([Required]string username) {
             string userId = await _userService.GetUserId(username);
             List<MessageDto> messageDtos = _messageService.GetAllUserMessages(userId);
-            List<MessageModel> messages = await GetMessages(messageDtos);
+            List<MessageModel> messages = await GetMessageModelsFromListOfDto(messageDtos);
             return Ok(messages);
         }
 
@@ -70,7 +94,7 @@ namespace MessengerApi.Controllers
             return BadRequest(ModelState);
         }
 
-        private async Task<List<MessageModel>> GetMessages(List<MessageDto> messageDtos) 
+        private async Task<List<MessageModel>> GetMessageModelsFromListOfDto(List<MessageDto> messageDtos) 
         {
             List<MessageModel> messages = new List<MessageModel>();
             foreach (var messageDto in messageDtos) 
