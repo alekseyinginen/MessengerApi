@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MessengerApi.BLL.Dto;
 using MessengerApi.BLL.Interfaces;
+using MessengerApi.DAL.Entities;
+using MessengerApi.TcpServer.Helpers;
 using MessengerApi.TcpServer.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,17 +20,24 @@ namespace MessengerApi.TcpServer.Core
     public class ServerObject : IHostedService
     {
         private readonly IMapper _mapper;
+        private readonly IConnectedUsersService connectedUsersService;
+        private readonly IMessageService messageService;
+        private readonly IUserService userService;
+
         private static TcpListener tcpListener;
-        private List<ClientObject> clients = new List<ClientObject>();
+        private List<ClientObject> Clients { get; }
 
         public ServerObject(IServiceProvider services)
         {
             using (var scope = services.CreateScope())
             {
                 _mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
-                //_userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-                //_messageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
+                userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+                messageService = scope.ServiceProvider.GetRequiredService<IMessageService>();
+                connectedUsersService = scope.ServiceProvider.GetRequiredService<IConnectedUsersService>();
             }
+
+            Clients = new List<ClientObject>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -39,21 +48,21 @@ namespace MessengerApi.TcpServer.Core
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            Task task = Task.Factory.StartNew(() => Disconnect());
+            Task task = Task.Factory.StartNew(() => StopListening());
             return task;
         }
 
         protected internal void AddConnection(ClientObject clientObject)
         {
-            clients.Add(clientObject);
+            Clients.Add(clientObject);
         }
 
         protected internal void RemoveConnection(string id)
         {
-            ClientObject client = clients.FirstOrDefault(c => c.Id == id);
+            ClientObject client = Clients.FirstOrDefault(c => c.ConnectionId == id);
             if (client != null)
             {
-                clients.Remove(client);
+                Clients.Remove(client);
             }
         }
 
@@ -67,49 +76,122 @@ namespace MessengerApi.TcpServer.Core
                 {
                     TcpClient tcpClient = tcpListener.AcceptTcpClient();
                     ClientObject clientObject = new ClientObject(tcpClient, this);
-                    Task.Factory.StartNew(() => clientObject.Process());
+                    Task.Run(() => clientObject.Process());
                 }
             }
             catch (Exception)
             {
-                Disconnect();
+                StopListening();
             }
         }
 
-        protected internal void BroadcastMessage(string message, string id, string groupId)
+        public async Task Connect(string userId, string connectionId)
         {
-            byte[] data = Encoding.UTF8.GetBytes(message);
+            var user = connectedUsersService.GetByUserId(userId);
 
-            var recipients = clients.Where(x => x.Id != id && x.User.GroupIds.Contains(groupId)).ToList();
-
-            foreach (var recipient in recipients)
+            if (user == null)
             {
-                recipient.Stream.Write(data, 0, data.Length);
+                await connectedUsersService.Connect(userId, connectionId);
+
+                var connectedUser = userService.GetUserById(userId);
+
+                await GetRelatedConnectionsForUserAndSendDetails(user, "userConnected", connectedUser);
+            }
+            else
+            {
+                await connectedUsersService.UpdateConnection(user, connectionId);
             }
         }
 
-        public void BroadcastEvent(string json, User user)
+        public async Task Disconnect(string connectionId)
         {
-            byte[] data = Encoding.UTF8.GetBytes(json);
+            await OnDisconnectedAsync(connectionId);
+        }
 
-            var recipients = clients.Where(x => x.User.GroupIds.Any(y => user.GroupIds.Contains(y))).ToList();
+        public async Task SendMessage(string message, string groupId, string connectionId)
+        {
+            var user = connectedUsersService.GetByConnectionId(connectionId);
 
-            foreach (var recipient in recipients)
+            if (user != null)
             {
-                recipient.Stream.Write(data, 0, data.Length);
+                var messageItem = GetMessageDto(user, message, groupId);
+
+                await messageService.Create(messageItem);
+
+                await GetRelatedConnectionsForUserAndSendDetails(user, "addMessage", messageItem);
             }
         }
 
-        public void Disconnect()
+        public async Task OnDisconnectedAsync(string connectionId)
+        {
+            var user = connectedUsersService.GetByConnectionId(connectionId);
+
+            if (user != null)
+            {
+                await connectedUsersService.Disconnect(user.ApplicationUserId);
+
+                var disconnectedUser = userService.GetUserById(user.ApplicationUserId);
+
+                await GetRelatedConnectionsForUserAndSendDetails(user, "userDisconnected", disconnectedUser);
+            }
+        }
+
+        public void StopListening()
         {
             tcpListener.Stop();
 
-            for (int i = 0; i < clients.Count; i++)
+            for (int i = 0; i < Clients.Count; i++)
             {
-                clients[i].Close();
+                Clients[i].Close();
             }
             Environment.Exit(0);
         }
+
+        #region private methods
+
+        private async Task GetRelatedConnectionsForUserAndSendDetails(ConnectedUser user, string method, object objectToSend)
+        {
+            var connectionsIds = await connectedUsersService.GetRelatedConnectionIds(user.ApplicationUserId);
+
+            SendToClients(connectionsIds, method, objectToSend);
+        }
+
+        private void SendToClients<T>(List<string> connectionIds, string method, T data)
+            where T : class
+        {
+            var clientsToSend = Clients.Where(x => connectionIds.Contains(x.ConnectionId)).ToList();
+
+            var model = GetTransportModel(method, data);
+
+            byte[] bytes = Encoding.UTF8.GetBytes(JsonFormatter.Serialize(model));
+
+            foreach (var client in clientsToSend)
+            {
+                client.Stream.Write(bytes, 0, bytes.Length);
+            }
+        }
+
+        private MessageDto GetMessageDto(ConnectedUser user, string message, string groupId)
+        {
+            return new MessageDto
+            {
+                ApplicationUserId = user.ApplicationUserId,
+                GroupId = groupId,
+                MessageText = message,
+                PublishTime = DateTime.Now
+            };
+        }
+
+        private TransportModel GetTransportModel<T>(string method, T data)
+            where T : class
+        {
+            return new TransportModel
+            {
+                Method = method,
+                JsonData = JsonFormatter.Serialize(data)
+            };
+        }
         
+        #endregion
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
@@ -11,29 +9,22 @@ namespace MessengerApi.TcpServer.Core
 {
     public class ClientObject
     {
-        protected internal string Id { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
 
         private readonly TcpClient client;
         private readonly ServerObject server;
 
         private User user;
-
         public User User => user;
+
+        public string ConnectionId { get; }
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
-            Id = Guid.NewGuid().ToString();
+            ConnectionId = Guid.NewGuid().ToString();
             client = tcpClient;
             server = serverObject;
             serverObject.AddConnection(this);
-        }
-
-        private void BroadcastEventDetails(string message)
-        {
-            EventDetails details = new EventDetails { MessageText = message, PublishTime = DateTime.Now };
-            string json = JsonFormatter.Serialize(details);
-            server.BroadcastEvent(json, user);
         }
 
         public async Task Process()
@@ -41,35 +32,72 @@ namespace MessengerApi.TcpServer.Core
             try
             {
                 Stream = client.GetStream();
-                user = JsonFormatter.Deserialize<User>(GetMessage());
-                BroadcastEventDetails(String.Format("\t\t{0} entered chat", user.Username));
-                
+                var transportModel = RecieveTransportModel();
+
+                user = JsonFormatter.Deserialize<User>(transportModel.JsonData);
+                await server.Connect(user.Id, ConnectionId);
+
                 while (true)
                 {
                     try
                     {
-                        string json = GetMessage();
-                        var message = JsonFormatter.Deserialize<BroadcastMessage>(json);
-                        server.BroadcastMessage(json, Id, message.GroupId);
+                        transportModel = RecieveTransportModel();
+                        await ParseTransportMethodAndSend(transportModel);
                     }
                     catch (Exception)
                     {
-                        BroadcastEventDetails(string.Format("\t\t{0}: left chat", user.Username));
+                        await server.Disconnect(ConnectionId);
                         break;
                     }
                 }
             }
-            catch (Exception)
-            {
-            }
             finally
             {
-                server.RemoveConnection(Id);
+                server.RemoveConnection(ConnectionId);
                 Close();
             }
         }
         
-        private string GetMessage()
+        
+        
+        protected internal void Close()
+        {
+            if (Stream != null)
+            {
+                Stream.Close();
+            }
+            if (client != null)
+            {
+                client.Close();
+            } 
+        }
+
+        #region private methods
+
+        private async Task ParseTransportMethodAndSend(TransportModel model)
+        {
+            if (model.Method == "addMessage")
+            {
+                var message = JsonFormatter.Deserialize<BroadcastMessage>(model.JsonData);
+                await server.SendMessage(message.MessageText, message.GroupId, ConnectionId);
+            }
+            else if (model.Method == "userDisconnected")
+            {
+                var details = JsonFormatter.Deserialize<EventDetails>(model.JsonData);
+                await server.Disconnect(ConnectionId);
+            }
+        }
+
+        private TransportModel RecieveTransportModel()
+        {
+            var json = GetMessageFromStream();
+
+            var transportModel = JsonFormatter.Deserialize<TransportModel>(json);
+
+            return transportModel;
+        }
+
+        private string GetMessageFromStream()
         {
             byte[] data = new byte[64];
             StringBuilder builder = new StringBuilder();
@@ -92,13 +120,7 @@ namespace MessengerApi.TcpServer.Core
             }
             return str;
         }
-        
-        protected internal void Close()
-        {
-            if (Stream != null)
-                Stream.Close();
-            if (client != null)
-                client.Close();
-        }
+
+        #endregion
     }
 }

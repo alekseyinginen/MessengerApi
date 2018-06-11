@@ -12,7 +12,6 @@ using MessengerApi.BLL.Interfaces;
 using MessengerApi.BLL.Services;
 using MessengerApi.DAL.Interfaces;
 using MessengerApi.DAL.Repositories;
-//using Microsoft.Extensions.Hosting;
 using MessengerApi.TcpServer.Core;
 using MessengerApi.Hubs;
 
@@ -40,6 +39,9 @@ namespace MessengerApi
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IGroupService, GroupServise>();
             services.AddScoped<IGroupUserService, GroupUserServise>();
+            services.AddScoped<IConnectedUsersService, ConnectedUsersService>();
+
+            
 
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ApplicationContext"), b => b.MigrationsAssembly("MessengerApi.Migrations")));
 
@@ -47,7 +49,7 @@ namespace MessengerApi
                .AddEntityFrameworkStores<ApplicationContext>()
                .AddDefaultTokenProviders();
 
-            //services.AddSingleton<IHostedService, ServerObject>();
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ServerObject>();
 
             services.AddMvc();
 

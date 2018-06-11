@@ -10,5 +10,7 @@ namespace MessengerApi.BLL.Dto
         public string Id { get; set; }
 
         public string Username { get; set; }
+
+        public string ApplicationUserId { get; set; }
     }
 }
